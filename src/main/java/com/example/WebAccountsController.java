@@ -52,6 +52,29 @@ public class WebAccountsController {
 		
 		return response.toString();
 	}
+	@RequestMapping("/hydrix")
+	public String goHydrix() throws RestClientException, IOException {
+		List<ServiceInstance> instances = discoveryClient.getInstances("HYSTRIX_CIRCUITBREAKER_FALLBACK");
+		ServiceInstance serviceInstance = instances.get(0);
+
+		String baseUrl = serviceInstance.getUri().toString();
+		System.out.println("befor url" + baseUrl);
+		baseUrl = baseUrl + "/employee";
+		System.out.println("after url" + baseUrl);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			// response=restTemplate.exchange(baseUrl,
+			// HttpMethod.GET,getHeaders(), String.class);
+
+			response = restTemplate.getForEntity(baseUrl, String.class);
+		} catch (Exception ex) {
+			System.out.println(ex);
+		}
+		System.out.println(response.getBody());
+
+		return response.toString();
+	}
 	private static HttpEntity<?> getHeaders() throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
